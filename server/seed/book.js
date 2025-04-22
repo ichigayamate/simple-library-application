@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
 const Book = require('../models/book');
+require("dotenv").config();
 
 const booksJsonPath = path.join(__dirname, 'book.json');
 
@@ -15,10 +16,8 @@ async function seedBooks() {
     await Book.insertMany(booksData);
 
     console.log('Books seeded successfully!');
-    process.exit(0);
   } catch (err) {
     console.error('Seeding failed:', err);
-    process.exit(1);
   }
 }
 

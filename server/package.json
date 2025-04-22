@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "seed": "node seed.js"
+    "seed": "node seed.js",
+    "seed:book": "node seed.js --only-books",
+    "seed:user": "node seed.js --only-users"
   },
   "keywords": [],
   "author": "",
