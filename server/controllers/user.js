@@ -34,6 +34,15 @@ class UserController {
     const token = generateToken(payload);
     new ResponseEntity({token}).generateResponse(res);
   }
+
+  static async getUser(req, res) {
+    const userId = req.user.id;
+    const user = await User.findById(userId).select("-password -__v");
+    if (!user) {
+      throw new BadRequestError("User not found");
+    }
+    new ResponseEntity(user).generateResponse(res);
+  }
 }
 
 module.exports = UserController;
