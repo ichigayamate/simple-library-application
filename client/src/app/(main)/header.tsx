@@ -9,6 +9,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import Link from "next/link";
 import { useContext } from "react";
 
 interface HomeHeaderProps {
@@ -30,7 +31,7 @@ export default function HomeHeader({
         <h1 className="text-3xl font-bold">Welcome to Our Library</h1>
       </header>
       <section className="space-y-2">
-        {(!isOverdue && hasBorrowedBook) && (
+        {!isOverdue && hasBorrowedBook && (
           <div role="alert" className="alert alert-info">
             <FontAwesomeIcon icon={faInfoCircle} />
             <span>
@@ -75,6 +76,11 @@ export default function HomeHeader({
           </div>
         )}
       </section>
+      {isAdmin && (
+        <section className="flex items-center justify-end max-w-[1600px] px-4">
+          <Link href="/add" className="btn btn-neutral mt-4">Add Book</Link>
+        </section>
+      )}
     </>
   );
 }

@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
   publishedYear: {
     type: Number,
     required: [true, "Published Year is required"],
+    min: [0, "Published Year must be a positive number"],
   },
   borrowedBy: {
     type: mongoose.Schema.Types.ObjectId,
