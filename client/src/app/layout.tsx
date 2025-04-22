@@ -3,6 +3,10 @@ import "./globals.css";
 import UserContextProvider from "@/lib/components/user-context";
 import { Metadata } from "next";
 
+import { config } from '@fortawesome/fontawesome-svg-core'
+import '@fortawesome/fontawesome-svg-core/styles.css'
+config.autoAddCss = false
+
 export const metadata: Metadata = {
   title: {
     default: "Library App",

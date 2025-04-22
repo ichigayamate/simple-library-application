@@ -57,7 +57,9 @@ export default function UserContextProvider({
   const logout = useCallback(() => {
     deleteCookie("token");
     setUser(null);
-  }, []);
+    router.refresh();
+    toast.success("Logged out successfully");
+  }, [router]);
 
   useEffect(() => {
     const token = getCookie("token") as string | null;
