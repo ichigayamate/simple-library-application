@@ -10,6 +10,9 @@ import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import dayjs from "dayjs";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 export default function Book({
   data,
@@ -18,6 +21,7 @@ export default function Book({
 }>) {
   const [borrowBookModal, setBorrowBookModal] = useState(false);
   const [returnBookModal, setReturnBookModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const { user, refreshUser } = useContext(UserContext);
   const token = getCookie("token") as string;
   const isBorrowingBook = Boolean(user?.borrowedBook);
@@ -75,6 +79,20 @@ export default function Book({
       });
   };
 
+  const handleDeleteBook = async () => {
+    await backend.delete(`/books/${data._id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(() => {
+      router.refresh();
+    }).catch(() => {
+      toast.error("Failed to delete book");
+    }).finally(() => {
+      setDeleteModal(false);
+    });
+  };
+
   return (
     <>
       <div className="flex rounded-xl border border-neutral-300 p-2 gap-2">
@@ -112,22 +130,47 @@ export default function Book({
               )}
             </div>
           </div>
-          <div>
-            {isBorrowingBook && selfBorrow ? (
-              <button
-                className="btn btn-block btn-error"
-                onClick={() => setReturnBookModal(true)}
-              >
-                Return book
-              </button>
-            ) : (
-              <button
-                className="btn btn-block btn-neutral"
-                onClick={() => setBorrowBookModal(true)}
-                disabled={isBorrowingBook || Boolean(data.borrowedBy)}
-              >
-                Borrow this book
-              </button>
+          <div className="flex gap-2 items-center">
+            <div className="flex-1">
+              {isBorrowingBook && selfBorrow ? (
+                <button
+                  className="btn btn-block btn-error"
+                  onClick={() => setReturnBookModal(true)}
+                >
+                  Return book
+                </button>
+              ) : (
+                <button
+                  className="btn btn-block btn-neutral"
+                  onClick={() => setBorrowBookModal(true)}
+                  disabled={isBorrowingBook || Boolean(data.borrowedBy)}
+                >
+                  Borrow this book
+                </button>
+              )}
+            </div>
+            {isAdmin && (
+              <Menu>
+                <MenuButton className="btn btn-ghost btn-circle btn-sm">
+                  <FontAwesomeIcon icon={faEllipsisV} size="lg" />
+                </MenuButton>
+                <MenuItems
+                  as="ul"
+                  anchor="bottom end"
+                  className="dropdown-content menu bg-base-100 rounded-box z-1 w-40 p-2 mt-2 shadow-sm outline-0"
+                >
+                  <MenuItem as="li">
+                    <button>Edit</button>
+                  </MenuItem>
+                  {!data.borrowedBy && (
+                    <MenuItem as="li">
+                      <button onClick={() => setDeleteModal(true)}>
+                        Delete
+                      </button>
+                    </MenuItem>
+                  )}
+                </MenuItems>
+              </Menu>
             )}
           </div>
         </div>
@@ -149,6 +192,16 @@ export default function Book({
         description=""
         confirmText="Return book"
         onConfirm={handleReturnBook}
+      />
+
+      <Modal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        title={`Delete book ${data.title}?`}
+        description=""
+        confirmText="Delete book"
+        confirmButtonClassName="!btn-error"
+        onConfirm={handleDeleteBook}
       />
     </>
   );
