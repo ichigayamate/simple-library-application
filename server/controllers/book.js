@@ -1,16 +1,17 @@
-const Book = require('../models/book');
+const Book = require("../models/book");
+const User = require("../models/user");
 const ResponseEntity = require("../helpers/response");
-const { NotFoundError, ForbiddenError } = require('../helpers/error');
+const { NotFoundError, ForbiddenError } = require("../helpers/error");
 
 class BookController {
   static async getAllBooks(req, res) {
-    const books = await Book.find();
+    const books = await Book.find().populate("borrowedBy", "name email");
     new ResponseEntity(books).generateResponse(res);
   }
 
   static async getBookById(req, res) {
     const { id } = req.params;
-    const book = await Book.findById(id);
+    const book = await Book.findById(id).populate("borrowedBy", "name email");;
     if (!book) throw new NotFoundError("Book not found");
 
     new ResponseEntity(book).generateResponse(res);
@@ -47,28 +48,40 @@ class BookController {
     const book = await Book.findById(id);
     if (!book) throw new NotFoundError("Book not found");
 
-    const { userId } = req.user;
+    const userId = req.user.id;
     const userData = await User.findById(userId);
-    if (userData.borrowedBooks) {
+    if (userData.borrowedBook) {
       throw new ForbiddenError("Return your book before borrowing another one");
     }
 
-    userData.borrowedBooks = id;
+    userData.borrowedBook = id;
     await userData.save();
 
-    new ResponseEntity(null).generateResponse(res, 200, "Book borrowed successfully");
+    book.borrowedBy = userId;
+    book.borrowedDate = new Date();
+    await book.save();
+
+    new ResponseEntity(null, 200, "Book borrowed successfully").generateResponse(res);
   }
 
   static async returnBook(req, res) {
-    const { userId } = req.user;
+    const userId = req.user.id;
     const userData = await User.findById(userId);
-    if (!userData.borrowedBooks) {
+    if (!userData.borrowedBook) {
       throw new NotFoundError("You don't have any borrowed books");
     }
 
-    userData.borrowedBooks = null;
+    const book = await Book.findById(userData.borrowedBook);
+    if (book) {
+      book.borrowedBy = null;
+      book.borrowedDate = null;
+      await book.save();
+    }
+
+    userData.borrowedBook = null;
     await userData.save();
-    new ResponseEntity(null).generateResponse(res, 200, "Book returned successfully");
+
+    new ResponseEntity(null, 200, "Book returned successfully").generateResponse(res);
   }
 }
 

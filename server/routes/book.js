@@ -10,6 +10,6 @@ router.put("/:id", adminOnly, BookController.updateBook);
 router.delete("/:id", adminOnly, BookController.deleteBook);
 
 router.post("/borrow/:id", BookController.borrowBook);
-router.post("/return/:id", BookController.returnBook);
+router.post("/return", BookController.returnBook);
 
 module.exports = router;

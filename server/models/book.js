@@ -20,6 +20,13 @@ const userSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Published Year is required"],
   },
+  borrowedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  borrowedDate: {
+    type: Date,
+  },
 }, {
   timestamps: true,
 });
