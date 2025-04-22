@@ -19,10 +19,14 @@ export async function middleware(request: NextRequest) {
       headers: {
         Authorization: `Bearer ${auth.value}`,
       },
-    }).then((res: Response) => res.json()).then((data: IResponse<User>) => data.data);
+    })
+      .then((res: Response) => res.json())
+      .then((data: IResponse<User>) => data.data);
     const isAdmin = userData?.role === "admin";
-    if (!isAdmin && request.nextUrl.pathname === "/add") {
-      return NextResponse.redirect(new URL("/", request.url));
+    if (!isAdmin) {
+      if (request.nextUrl.pathname === "/add" || request.nextUrl.pathname === "/borrows" || request.nextUrl.pathname.endsWith("/edit")) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
     }
 
     if (

@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import Link from "next/link";
 
 export default function Book({
   data,
@@ -160,7 +161,7 @@ export default function Book({
                   className="dropdown-content menu bg-base-100 rounded-box z-1 w-40 p-2 mt-2 shadow-sm outline-0"
                 >
                   <MenuItem as="li">
-                    <button>Edit</button>
+                    <Link href={`/${data._id}/edit`}>Edit</Link>
                   </MenuItem>
                   {!data.borrowedBy && (
                     <MenuItem as="li">
