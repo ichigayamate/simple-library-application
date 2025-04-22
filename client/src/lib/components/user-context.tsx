@@ -19,6 +19,7 @@ interface UserContextType {
   user: User | null;
   login: (token: string) => Promise<void>;
   logout: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 export const UserContext = createContext<UserContextType>({
@@ -26,6 +27,7 @@ export const UserContext = createContext<UserContextType>({
   user: null,
   login: async () => {},
   logout: () => {},
+  refreshUser: async () => {},
 });
 
 export default function UserContextProvider({
@@ -61,6 +63,14 @@ export default function UserContextProvider({
     toast.success("Logged out successfully");
   }, [router]);
 
+  const refreshUser = useCallback(async () => {
+    const token = getCookie("token") as string | null;
+    if (token) {
+      const res = await getUserData(token);
+      setUser(res.data.data);
+    }
+  }, [getUserData]);
+
   useEffect(() => {
     const token = getCookie("token") as string | null;
     if (token) {
@@ -76,9 +86,10 @@ export default function UserContextProvider({
       domReady,
       user,
       login,
-      logout
+      logout,
+      refreshUser,
     }),
-    [domReady, user, login, logout]
+    [domReady, user, login, logout, refreshUser]
   );
 
   return (

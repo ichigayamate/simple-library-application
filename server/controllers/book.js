@@ -2,16 +2,25 @@ const Book = require("../models/book");
 const User = require("../models/user");
 const ResponseEntity = require("../helpers/response");
 const { NotFoundError, ForbiddenError } = require("../helpers/error");
+const dayjs = require("dayjs");
 
 class BookController {
   static async getAllBooks(req, res) {
-    const books = await Book.find().populate("borrowedBy", "name email");
+    const booksQuery = Book.find();
+    const isAdmin = req.user.role === "admin";
+    if (isAdmin) {
+      booksQuery.populate("borrowedBy", "name email");
+    }
+    const books = await booksQuery;
     new ResponseEntity(books).generateResponse(res);
   }
 
   static async getBookById(req, res) {
     const { id } = req.params;
-    const book = await Book.findById(id).populate("borrowedBy", "name email");;
+    const isAdmin = req.user.role === "admin";
+    const bookQuery = Book.findById(id);
+    if (isAdmin) bookQuery.populate("borrowedBy", "name email");
+    const book = await bookQuery;
     if (!book) throw new NotFoundError("Book not found");
 
     new ResponseEntity(book).generateResponse(res);
@@ -40,6 +49,11 @@ class BookController {
     const { id } = req.params;
     const deletedBook = await Book.findByIdAndDelete(id);
     if (!deletedBook) throw new NotFoundError("Book not found");
+
+    if (deletedBook.borrowedBy) {
+      throw new ForbiddenError("Book must be returned before deletion");
+    }
+
     new ResponseEntity(deletedBook).generateResponse(res);
   }
 
@@ -59,9 +73,10 @@ class BookController {
 
     book.borrowedBy = userId;
     book.borrowedDate = new Date();
+    book.returnDate = dayjs().add(7, "day").toDate();
     await book.save();
 
-    new ResponseEntity(null, 200, "Book borrowed successfully").generateResponse(res);
+    new ResponseEntity(null, 200, `Book ${book.title} successfully borrowed. Return before ${dayjs(book.returnDate).format("DD MMM YYYY")}`).generateResponse(res);
   }
 
   static async returnBook(req, res) {
@@ -75,6 +90,7 @@ class BookController {
     if (book) {
       book.borrowedBy = null;
       book.borrowedDate = null;
+      book.returnDate = null;
       await book.save();
     }
 

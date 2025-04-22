@@ -8,4 +8,5 @@ export interface Book {
   publishedYear: string;
   borrowedBy?: User;
   borrowedDate?: string | Date;
+  returnDate?: string | Date;
 }

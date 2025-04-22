@@ -27,6 +27,9 @@ const userSchema = new mongoose.Schema({
   borrowedDate: {
     type: Date,
   },
+  returnDate: {
+    type: Date,
+  },
 }, {
   timestamps: true,
 });

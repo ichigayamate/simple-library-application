@@ -18,7 +18,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="navbar bg-white shadow-lg">
+      <nav className="navbar bg-white/80 backdrop-blur-xl shadow-lg fixed z-[1000]">
         <div className="flex-1">
           <Link href="/" className="btn btn-ghost text-xl">
             Library

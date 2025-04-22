@@ -37,7 +37,7 @@ class UserController {
 
   static async getUser(req, res) {
     const userId = req.user.id;
-    const user = await User.findById(userId).select("-password -__v");
+    const user = await User.findById(userId).select("-password -__v").populate("borrowedBook", "title author genre publishedYear returnDate");
     if (!user) {
       throw new BadRequestError("User not found");
     }
