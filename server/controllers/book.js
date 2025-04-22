@@ -99,6 +99,11 @@ class BookController {
 
     new ResponseEntity(null, 200, "Book returned successfully").generateResponse(res);
   }
+
+  static async checkAllBorrowedBooks(req, res) {
+    const books = await Book.find({ borrowedBy: { $ne: null } }).populate("borrowedBy", "name email");
+    new ResponseEntity(books).generateResponse(res);
+  }
 }
 
 module.exports = BookController;

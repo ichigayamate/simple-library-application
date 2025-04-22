@@ -4,6 +4,7 @@ const { authentication, adminOnly } = require('../middleware/auth');
 
 router.use(authentication);
 router.get("/", BookController.getAllBooks);
+router.get("/borrows", adminOnly, BookController.checkAllBorrowedBooks);
 router.get("/:id", BookController.getBookById);
 router.post("/", adminOnly, BookController.createBook);
 router.put("/:id", adminOnly, BookController.updateBook);

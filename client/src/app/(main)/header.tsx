@@ -73,12 +73,22 @@ export default function HomeHeader({
                 })}
               </ol>
             </div>
+            <div>
+              <Link href="/borrows" className="btn btn-sm btn-neutral">
+                Details
+              </Link>
+            </div>
           </div>
         )}
       </section>
       {isAdmin && (
-        <section className="flex items-center justify-end max-w-[1600px] px-4">
-          <Link href="/add" className="btn btn-neutral mt-4">Add Book</Link>
+        <section className="flex items-center justify-end max-w-[1600px] px-4 space-x-2">
+          <Link href="/borrows" className="btn btn-neutral mt-4">
+            View Borrowed Books
+          </Link>
+          <Link href="/add" className="btn btn-neutral mt-4">
+            Add Book
+          </Link>
         </section>
       )}
     </>
